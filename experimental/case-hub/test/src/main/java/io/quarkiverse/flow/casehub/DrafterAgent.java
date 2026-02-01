@@ -12,6 +12,6 @@ import io.quarkiverse.langchain4j.RegisterAiService;
 @ApplicationScoped
 @SystemMessage("You draft a short, friendly newsletter paragraph. Return ONLY the final draft text.")
 public interface DrafterAgent {
-  @UserMessage("Brief:{{brief}}")
-  String draft(@MemoryId String memoryId, @V("brief") String brief);
+    @UserMessage("Brief:{{brief}}")
+    String draft(@MemoryId String memoryId, @V("brief") String brief);
 }

@@ -15,5 +15,6 @@
         <module>engine</module>
         <module>test</module>
         <module>reactor</module>
+        <module>schema</module>
     </modules>
 </project>

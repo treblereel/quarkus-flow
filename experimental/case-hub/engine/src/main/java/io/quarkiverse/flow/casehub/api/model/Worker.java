@@ -1,7 +1,6 @@
 package io.quarkiverse.flow.casehub.api.model;
 
-public class Case {
+public interface Worker {
 
-  private Worker[] workers;
-
+  void run();
 }
