@@ -16,6 +16,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.quarkiverse.flow.casehub.api.context.StateContext;
 
 public class StateContextImpl implements StateContext {
@@ -25,7 +26,8 @@ public class StateContextImpl implements StateContext {
     private final Map<String, Object> data = new ConcurrentHashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-    public StateContextImpl() {}
+    public StateContextImpl() {
+    }
 
     public StateContextImpl(Map<String, Object> initial) {
         if (initial != null) {
@@ -66,12 +68,14 @@ public class StateContextImpl implements StateContext {
         }
     }
 
+    //TODO: optimize
     @Override
     public <T> T getAs(String key, Class<T> type) {
         lock.readLock().lock();
         try {
             Object value = data.get(key);
-            if (value == null) return null;
+            if (value == null)
+                return null;
             if (type.isInstance(value)) {
                 return type.cast(value);
             }
@@ -165,41 +169,51 @@ public class StateContextImpl implements StateContext {
     @Override
     public Integer getInt(String key) {
         Object v = get(key);
-        if (v == null) return null;
-        if (v instanceof Number n) return n.intValue();
+        if (v == null)
+            return null;
+        if (v instanceof Number n)
+            return n.intValue();
         return Integer.parseInt(v.toString());
     }
 
     @Override
     public Long getLong(String key) {
         Object v = get(key);
-        if (v == null) return null;
-        if (v instanceof Number n) return n.longValue();
+        if (v == null)
+            return null;
+        if (v instanceof Number n)
+            return n.longValue();
         return Long.parseLong(v.toString());
     }
 
     @Override
     public Double getDouble(String key) {
         Object v = get(key);
-        if (v == null) return null;
-        if (v instanceof Number n) return n.doubleValue();
+        if (v == null)
+            return null;
+        if (v instanceof Number n)
+            return n.doubleValue();
         return Double.parseDouble(v.toString());
     }
 
     @Override
     public Boolean getBoolean(String key) {
         Object v = get(key);
-        if (v == null) return null;
-        if (v instanceof Boolean b) return b;
+        if (v == null)
+            return null;
+        if (v instanceof Boolean b)
+            return b;
         return Boolean.parseBoolean(v.toString());
     }
 
+    //TODO: optimize
     @Override
     public <T> List<T> getList(String key, Class<T> elementType) {
         lock.readLock().lock();
         try {
             Object v = data.get(key);
-            if (v == null) return null;
+            if (v == null)
+                return null;
             if (v instanceof List<?> list) {
                 return list.stream()
                         .map(item -> mapper.convertValue(item, elementType))
@@ -238,7 +252,8 @@ public class StateContextImpl implements StateContext {
             } else {
                 return null;
             }
-            if (current == null) return null;
+            if (current == null)
+                return null;
         }
         return current;
     }
@@ -273,7 +288,8 @@ public class StateContextImpl implements StateContext {
 
     @Override
     public StateContext setAll(Map<String, Object> values) {
-        if (values == null || values.isEmpty()) return this;
+        if (values == null || values.isEmpty())
+            return this;
         lock.writeLock().lock();
         try {
             data.putAll(values);
@@ -367,7 +383,8 @@ public class StateContextImpl implements StateContext {
 
     @Override
     public StateContext merge(StateContext other) {
-        if (other == null) return this;
+        if (other == null)
+            return this;
         lock.writeLock().lock();
         try {
             data.putAll(other.getData());
@@ -402,6 +419,7 @@ public class StateContextImpl implements StateContext {
         return copy;
     }
 
+    //TODO: optimize
     @Override
     public String toString() {
         lock.readLock().lock();
@@ -416,8 +434,10 @@ public class StateContextImpl implements StateContext {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof StateContextImpl that)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof StateContextImpl that))
+            return false;
         lock.readLock().lock();
         try {
             that.lock.readLock().lock();

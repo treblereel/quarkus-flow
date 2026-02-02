@@ -4,5 +4,5 @@ import io.quarkiverse.flow.casehub.api.context.StateContext;
 
 public interface Worker {
 
-  void execute(StateContext context);
+    void execute(StateContext context);
 }

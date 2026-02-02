@@ -1,11 +1,11 @@
 package io.quarkiverse.flow.casehub.engine;
 
-import io.quarkiverse.flow.casehub.api.model.Case;
-
 import java.util.UUID;
+
+import io.quarkiverse.flow.casehub.api.model.CaseDefinition;
 
 public interface CaseHubEngine {
 
-    UUID submitCase(Case theCase);
+    UUID submitCase(CaseDefinition definition);
 
 }

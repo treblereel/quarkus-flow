@@ -11,10 +11,7 @@
     <artifactId>parent</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>api</module>
         <module>engine</module>
         <module>test</module>
-        <module>reactor</module>
-        <module>schema</module>
     </modules>
 </project>
