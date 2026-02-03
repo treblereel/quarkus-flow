@@ -1,5 +1,9 @@
 package io.quarkiverse.flow.casehub.test;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
+import java.time.Duration;
 import java.util.UUID;
 import java.util.concurrent.CompletionStage;
 
@@ -22,12 +26,14 @@ public class CaseHubAppTest {
         CaseDefinition caseDefinition = new CaseDefinition();
         caseDefinition.setName("Test Case 1");
         caseDefinition.setVersion("1.0");
-        CompletionStage<UUID> futureSubmitCase = engine.submitCase(caseDefinition);
-        UUID caseId = futureSubmitCase.toCompletableFuture().get();
 
-        CompletionStage<UUID> futureStartCase = engine.startCase(caseId);
-        futureStartCase.toCompletableFuture().get();
+        CompletionStage<UUID> stage = engine.submitCase(caseDefinition)
+                .thenCompose(engine::startCase);
 
-        System.out.println("Test received case ID: " + caseId);
+        UUID caseId = assertTimeoutPreemptively(
+                Duration.ofSeconds(5),
+                () -> stage.toCompletableFuture().join());
+
+        assertNotNull(caseId, "caseId must not be null");
     }
 }

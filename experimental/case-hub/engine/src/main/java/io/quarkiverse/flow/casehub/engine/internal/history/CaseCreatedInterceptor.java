@@ -1,7 +1,5 @@
 package io.quarkiverse.flow.casehub.engine.internal.history;
 
-import static io.quarkiverse.flow.casehub.engine.internal.history.CaseCreatedInterceptor.*;
-
 import jakarta.annotation.Priority;
 import jakarta.inject.Inject;
 import jakarta.interceptor.AroundInvoke;
@@ -31,32 +29,15 @@ public class CaseCreatedInterceptor {
         }
 
         CaseMetaInfo caseMetaInfo = (CaseMetaInfo) ctx.getParameters()[0];
-
         StateContext snapshot = caseMetaInfo.getContext().snapshot();
-
-        long start = System.currentTimeMillis();
-
         Object proceedResult = ctx.proceed();
-
         JsonNode diff = snapshot.diff(caseMetaInfo.getContext());
-
-        System.out.println("StateContext diff after method " +
-                ctx.getMethod().getDeclaringClass().getSimpleName() +
-                "." + ctx.getMethod().getName() + ":\n" + diff.toPrettyString());
 
         if (!(proceedResult instanceof Uni<?> uni)) {
             throw new IllegalStateException("@CaseEventTracker method must return Uni<T> to be used with reactive interceptor");
         }
 
-        return uni
-                .call(() -> historyService.persistCaseEvent(caseCreated.status(), caseMetaInfo, diff))
-                .eventually(() -> {
-                    long time = System.currentTimeMillis() - start;
-                    System.out.println(
-                            ctx.getMethod().getDeclaringClass().getSimpleName() +
-                                    "." + ctx.getMethod().getName() +
-                                    " executed in " + time + " ms");
-                });
+        return uni.call(() -> historyService.persistCaseEvent(caseCreated.status(), caseMetaInfo, diff));
     }
 
 }

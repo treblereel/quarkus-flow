@@ -18,6 +18,7 @@ public class OnCaseStartingEventProcessor {
     @WithTransaction
     public Uni<UUID> onEvent(CaseMetaInfo metaInfo) {
         System.out.println("Case created with ID: " + metaInfo.getDefinition().getUuid());
+        metaInfo.setStatus(CaseStatus.STARTING);
         return Uni.createFrom().item(metaInfo.getDefinition().getUuid());
     }
 }

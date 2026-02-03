@@ -5,7 +5,6 @@ import java.util.concurrent.CompletionStage;
 
 import io.quarkiverse.flow.casehub.api.context.StateContext;
 import io.quarkiverse.flow.casehub.api.model.CaseDefinition;
-import io.smallrye.mutiny.Uni;
 
 public interface CaseHubEngine {
 
@@ -13,5 +12,5 @@ public interface CaseHubEngine {
 
     CompletionStage<UUID> submitCase(CaseDefinition definition, StateContext stateContext);
 
-    Uni<UUID> startCase(UUID caseId);
+    CompletionStage<UUID> startCase(UUID caseId);
 }

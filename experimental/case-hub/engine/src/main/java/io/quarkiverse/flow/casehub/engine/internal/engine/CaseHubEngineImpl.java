@@ -2,6 +2,7 @@ package io.quarkiverse.flow.casehub.engine.internal.engine;
 
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,7 +13,6 @@ import io.quarkiverse.flow.casehub.api.context.StateContext;
 import io.quarkiverse.flow.casehub.api.model.CaseDefinition;
 import io.quarkiverse.flow.casehub.engine.CaseHubEngine;
 import io.quarkiverse.flow.casehub.engine.internal.context.StateContextImpl;
-import io.smallrye.mutiny.Uni;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.eventbus.Message;
 
@@ -40,12 +40,13 @@ public class CaseHubEngineImpl implements CaseHubEngine {
     }
 
     @Override
-    public Uni<UUID> startCase(UUID caseId) {
+    public CompletionStage<UUID> startCase(UUID caseId) {
         if (!definitions.containsKey(caseId)) {
-            return Uni.createFrom().failure(new IllegalStateException("No case definition found for caseId: " + caseId));
+            return CompletableFuture.failedFuture(
+                    new IllegalStateException("No case definition found for caseId: " + caseId));
         }
-        return Uni.createFrom().item(eventBus.<UUID> request("casehub.case.starting", caseId)
+        return eventBus.<UUID> request("casehub.case.starting", definitions.get(caseId))
                 .map(Message::body)
-                .result());
+                .toCompletionStage();
     }
 }
