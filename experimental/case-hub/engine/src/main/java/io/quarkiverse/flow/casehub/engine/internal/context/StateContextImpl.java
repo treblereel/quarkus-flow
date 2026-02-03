@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.function.Function;
@@ -15,15 +14,17 @@ import java.util.function.Function;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.fabric8.zjsonpatch.JsonDiff;
 import io.quarkiverse.flow.casehub.api.context.StateContext;
 
 public class StateContextImpl implements StateContext {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    private final Map<String, Object> data = new ConcurrentHashMap<>();
+    private final Map<String, Object> data = new LinkedHashMap<>();
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     public StateContextImpl() {
@@ -68,7 +69,6 @@ public class StateContextImpl implements StateContext {
         }
     }
 
-    //TODO: optimize
     @Override
     public <T> T getAs(String key, Class<T> type) {
         lock.readLock().lock();
@@ -206,7 +206,6 @@ public class StateContextImpl implements StateContext {
         return Boolean.parseBoolean(v.toString());
     }
 
-    //TODO: optimize
     @Override
     public <T> List<T> getList(String key, Class<T> elementType) {
         lock.readLock().lock();
@@ -269,7 +268,7 @@ public class StateContextImpl implements StateContext {
             for (int i = 0; i < parts.length - 1; i++) {
                 Object next = current.get(parts[i]);
                 if (next == null) {
-                    next = new ConcurrentHashMap<String, Object>();
+                    next = new LinkedHashMap<String, Object>();
                     current.put(parts[i], next);
                 }
                 if (next instanceof Map) {
@@ -382,6 +381,16 @@ public class StateContextImpl implements StateContext {
     }
 
     @Override
+    public JsonNode asJsonNode() {
+        lock.readLock().lock();
+        try {
+            return mapper.convertValue(data, JsonNode.class);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
+    @Override
     public StateContext merge(StateContext other) {
         if (other == null)
             return this;
@@ -404,6 +413,18 @@ public class StateContextImpl implements StateContext {
         }
     }
 
+    @Override
+    public JsonNode diff(StateContext other) {
+        lock.readLock().lock();
+        try {
+            JsonNode thisNode = mapper.convertValue(this.data, JsonNode.class);
+            JsonNode otherNode = mapper.convertValue(other.getData(), JsonNode.class);
+            return JsonDiff.asJson(thisNode, otherNode);
+        } finally {
+            lock.readLock().unlock();
+        }
+    }
+
     @SuppressWarnings("unchecked")
     private Map<String, Object> deepCopy(Map<String, Object> source) {
         Map<String, Object> copy = new LinkedHashMap<>();
@@ -419,7 +440,6 @@ public class StateContextImpl implements StateContext {
         return copy;
     }
 
-    //TODO: optimize
     @Override
     public String toString() {
         lock.readLock().lock();
@@ -438,17 +458,9 @@ public class StateContextImpl implements StateContext {
             return true;
         if (!(o instanceof StateContextImpl that))
             return false;
-        lock.readLock().lock();
-        try {
-            that.lock.readLock().lock();
-            try {
-                return data.equals(that.data);
-            } finally {
-                that.lock.readLock().unlock();
-            }
-        } finally {
-            lock.readLock().unlock();
-        }
+        Map<String, Object> thisData = this.getData();
+        Map<String, Object> thatData = that.getData();
+        return thisData.equals(thatData);
     }
 
     @Override

@@ -7,16 +7,16 @@ import java.util.UUID;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Transient;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 
 @Entity
 public class CaseDefinition extends PanacheEntity {
 
     private UUID uuid;
-    private String namespace;
+    private String namespace = "default";
     private String name;
-    private String version;
-    private String title;
+    private String version = "1.0";
+    private String title = "Untitled Case Definition";
 
     @Transient
     private Set<Worker> workers = new HashSet<>();

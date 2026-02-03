@@ -5,6 +5,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+
+import io.quarkiverse.flow.casehub.engine.internal.context.StateContextImpl;
+
+@JsonDeserialize(as = StateContextImpl.class)
 public interface StateContext {
 
     Map<String, Object> getData();
@@ -59,7 +65,11 @@ public interface StateContext {
 
     int size();
 
+    JsonNode asJsonNode();
+
     StateContext merge(StateContext other);
 
     StateContext snapshot();
+
+    JsonNode diff(StateContext other);
 }

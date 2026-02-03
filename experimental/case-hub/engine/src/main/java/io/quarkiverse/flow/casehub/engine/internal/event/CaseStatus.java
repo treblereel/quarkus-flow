@@ -7,5 +7,6 @@ public enum CaseStatus {
     COMPLETED,
     FAILED,
     CANCELED,
-    TERMINATED
+    TERMINATED,
+    NONE
 }

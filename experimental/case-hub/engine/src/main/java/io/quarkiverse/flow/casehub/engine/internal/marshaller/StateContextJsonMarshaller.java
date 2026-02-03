@@ -1,20 +1,21 @@
 package io.quarkiverse.flow.casehub.engine.internal.marshaller;
 
+import java.util.Map;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import io.fabric8.zjsonpatch.JsonDiff;
 import io.quarkiverse.flow.casehub.api.context.StateContext;
 import io.quarkiverse.flow.casehub.engine.internal.context.StateContextImpl;
-import jakarta.enterprise.context.ApplicationScoped;
-
-import java.util.Map;
 
 @ApplicationScoped
 public class StateContextJsonMarshaller {
 
     private static final ObjectMapper mapper = new ObjectMapper();
-
 
     String toJson(StateContext stateContext) {
         try {
