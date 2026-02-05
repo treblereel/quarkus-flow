@@ -19,4 +19,9 @@ public class WorkerCompletedEvent extends WorkerEvent {
     public Object getResult() {
         return result;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_COMPLETED;
+    }
 }

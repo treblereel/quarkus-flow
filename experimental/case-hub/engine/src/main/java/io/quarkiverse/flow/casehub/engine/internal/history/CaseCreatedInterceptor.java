@@ -10,10 +10,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkiverse.flow.casehub.api.context.StateContext;
 import io.quarkiverse.flow.casehub.engine.internal.engine.CaseMetaInfo;
-import io.quarkiverse.flow.casehub.engine.internal.event.CaseStatus;
+import io.quarkiverse.flow.casehub.engine.internal.event.CaseEventType;
 import io.smallrye.mutiny.Uni;
 
-@CaseEventTracker(status = CaseStatus.NONE)
+@CaseEventTracker(eventType = CaseEventType.CASE_EXECUTION_STARTED)
 @Interceptor
 @Priority(Interceptor.Priority.APPLICATION)
 public class CaseCreatedInterceptor {
@@ -37,7 +37,6 @@ public class CaseCreatedInterceptor {
             throw new IllegalStateException("@CaseEventTracker method must return Uni<T> to be used with reactive interceptor");
         }
 
-        return uni.call(() -> historyService.persistCaseEvent(caseCreated.status(), caseMetaInfo, diff));
+        return uni.call(() -> historyService.persistCaseEvent(caseCreated.eventType(), caseMetaInfo, diff));
     }
-
 }

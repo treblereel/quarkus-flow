@@ -19,4 +19,9 @@ public class CaseCompletedEvent extends CaseEvent {
     public Object getResult() {
         return result;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.CASE_EXECUTION_COMPLETED;
+    }
 }

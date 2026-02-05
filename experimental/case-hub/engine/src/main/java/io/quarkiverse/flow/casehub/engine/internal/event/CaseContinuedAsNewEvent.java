@@ -19,4 +19,9 @@ public class CaseContinuedAsNewEvent extends CaseEvent {
     public UUID getNewCaseId() {
         return newCaseId;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.CASE_EXECUTION_CONTINUED_AS_NEW;
+    }
 }

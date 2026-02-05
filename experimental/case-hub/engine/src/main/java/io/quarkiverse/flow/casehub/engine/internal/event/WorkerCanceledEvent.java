@@ -19,4 +19,9 @@ public class WorkerCanceledEvent extends WorkerEvent {
     public String getReason() {
         return reason;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_CANCELED;
+    }
 }

@@ -3,35 +3,49 @@ package io.quarkiverse.flow.casehub.engine.internal.history;
 import java.time.Instant;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+import org.hibernate.reactive.mutiny.Mutiny;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkiverse.flow.casehub.engine.internal.engine.CaseMetaInfo;
-import io.quarkiverse.flow.casehub.engine.internal.event.CaseStatus;
+import io.quarkiverse.flow.casehub.engine.internal.event.CaseEventType;
+import io.quarkiverse.flow.casehub.engine.internal.model.CaseExecution;
+import io.quarkiverse.flow.casehub.engine.internal.model.CaseHistoryEvent;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
 import io.smallrye.mutiny.Uni;
 
 @ApplicationScoped
 public class HistoryService {
 
+    @Inject
+    Mutiny.SessionFactory sessionFactory;
+
     @WithTransaction
-    public Uni<Void> persistCaseEvent(CaseStatus status, CaseMetaInfo caseMetaInfo, JsonNode diff) {
-        System.out.printf("Persisting case event: caseId=%s, status=%s%n",
-                caseMetaInfo.getDefinition().getUuid(),
-                status.name());
+    public Uni<Void> persistCaseEvent(CaseEventType eventType, CaseMetaInfo caseMetaInfo, JsonNode attributes) {
+        CaseExecution execution = caseMetaInfo.getExecution();
 
-        System.out.println("DIFF  " + diff.toPrettyString() + " " + diff.isEmpty());
+        System.out.printf("Persisting case event: caseId=%s, eventType=%s%n",
+                execution.getCaseId(),
+                eventType.name());
 
-        CaseStateChanged event = new CaseStateChanged();
-        event.setCaseDefinition(caseMetaInfo.getDefinition());
+        System.out.println("ATTRIBUTES  " + (attributes != null ? attributes.toPrettyString() : "null") + " "
+                + (attributes != null && attributes.isEmpty()));
+
+        CaseHistoryEvent event = new CaseHistoryEvent();
+        event.setEventId(execution.incrementHistoryLength());
+        event.setEventType(eventType);
         event.setTimestamp(Instant.now());
-        event.setStatus(status);
-        event.setReason("Case has been " + status.name().toLowerCase());
-        if (!diff.isEmpty()) {
-            event.setContext(caseMetaInfo.getContext().asJsonNode());
+        event.setReason("Case event: " + eventType.name().toLowerCase().replace('_', ' '));
+
+        if (attributes != null && !attributes.isEmpty()) {
+            event.setAttributes(attributes);
         }
 
-        return event.persist().replaceWithVoid();
+        return sessionFactory.withTransaction(session -> session.merge(execution)
+                .invoke(mergedExecution -> event.setCaseExecution(mergedExecution))
+                .chain(() -> session.persist(event)))
+                .replaceWithVoid();
     }
-
 }

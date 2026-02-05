@@ -26,4 +26,9 @@ public class WorkerFailedEvent extends WorkerEvent {
     public Throwable getCause() {
         return cause;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_FAILED;
+    }
 }

@@ -26,4 +26,9 @@ public abstract class WorkerEvent {
     public Instant getTimestamp() {
         return timestamp;
     }
+
+    /**
+     * Returns the unified event type for this worker event.
+     */
+    public abstract CaseEventType getCaseEventType();
 }

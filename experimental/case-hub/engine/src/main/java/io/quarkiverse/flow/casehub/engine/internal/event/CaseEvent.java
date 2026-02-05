@@ -20,4 +20,9 @@ public abstract class CaseEvent {
     public Instant getTimestamp() {
         return timestamp;
     }
+
+    /**
+     * Returns the unified event type for this case event.
+     */
+    public abstract CaseEventType getCaseEventType();
 }

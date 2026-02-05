@@ -26,4 +26,9 @@ public class WorkerRetryingEvent extends WorkerEvent {
     public Throwable getLastError() {
         return lastError;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_RETRYING;
+    }
 }

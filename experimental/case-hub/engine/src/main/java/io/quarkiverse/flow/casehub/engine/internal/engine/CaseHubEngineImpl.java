@@ -22,7 +22,7 @@ public class CaseHubEngineImpl implements CaseHubEngine {
     @Inject
     EventBus eventBus;
 
-    private final Map<UUID, CaseMetaInfo> definitions = new ConcurrentHashMap<>();
+    private final Map<UUID, CaseMetaInfo> executions = new ConcurrentHashMap<>();
 
     @Override
     public CompletionStage<UUID> submitCase(CaseDefinition definition) {
@@ -33,7 +33,7 @@ public class CaseHubEngineImpl implements CaseHubEngine {
     @Override
     public CompletionStage<UUID> submitCase(CaseDefinition definition, StateContext stateContext) {
         CaseMetaInfo metaInfo = new CaseMetaInfo(definition, stateContext);
-        definitions.put(definition.getUuid(), metaInfo);
+        executions.put(definition.getUuid(), metaInfo);
         return eventBus.<UUID> request("casehub.case.created", metaInfo)
                 .map(Message::body)
                 .toCompletionStage();
@@ -41,11 +41,11 @@ public class CaseHubEngineImpl implements CaseHubEngine {
 
     @Override
     public CompletionStage<UUID> startCase(UUID caseId) {
-        if (!definitions.containsKey(caseId)) {
+        if (!executions.containsKey(caseId)) {
             return CompletableFuture.failedFuture(
-                    new IllegalStateException("No case definition found for caseId: " + caseId));
+                    new IllegalStateException("No case execution found for caseId: " + caseId));
         }
-        return eventBus.<UUID> request("casehub.case.starting", definitions.get(caseId))
+        return eventBus.<UUID> request("casehub.case.starting", executions.get(caseId))
                 .map(Message::body)
                 .toCompletionStage();
     }

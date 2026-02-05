@@ -26,4 +26,9 @@ public class CaseFailedEvent extends CaseEvent {
     public Throwable getCause() {
         return cause;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.CASE_EXECUTION_FAILED;
+    }
 }

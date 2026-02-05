@@ -2,30 +2,42 @@ package io.quarkiverse.flow.casehub.engine.internal.engine;
 
 import io.quarkiverse.flow.casehub.api.context.StateContext;
 import io.quarkiverse.flow.casehub.api.model.CaseDefinition;
-import io.quarkiverse.flow.casehub.engine.internal.event.CaseStatus;
+import io.quarkiverse.flow.casehub.engine.internal.event.CaseExecutionStatus;
+import io.quarkiverse.flow.casehub.engine.internal.model.CaseExecution;
 
 public class CaseMetaInfo {
 
-    private final CaseDefinition definition;
+    private final CaseExecution execution;
     private final StateContext context;
 
-    private CaseStatus status = CaseStatus.CREATED;
-
     public CaseMetaInfo(CaseDefinition definition, StateContext context) {
-        this.definition = definition;
+        this.execution = new CaseExecution();
+        this.execution.setCaseId(definition.getUuid());
+        this.execution.setCaseDefinition(definition);
+        this.execution.setTaskQueue(definition.getTaskQueue());
         this.context = context;
     }
 
-    public CaseStatus getStatus() {
-        return status;
+    public CaseExecutionStatus getStatus() {
+        return execution.getStatus();
     }
 
-    public void setStatus(CaseStatus status) {
-        this.status = status;
+    public void setStatus(CaseExecutionStatus status) {
+        execution.setStatus(status);
     }
 
+    /**
+     * Convenience method to get the case definition.
+     */
     public CaseDefinition getDefinition() {
-        return definition;
+        return execution.getCaseDefinition();
+    }
+
+    /**
+     * Returns the underlying case execution entity.
+     */
+    public CaseExecution getExecution() {
+        return execution;
     }
 
     public StateContext getContext() {

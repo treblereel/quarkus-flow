@@ -20,4 +20,9 @@ public class WorkerTimedOutEvent extends WorkerEvent {
     public Duration getTimeout() {
         return timeout;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_TIMED_OUT;
+    }
 }

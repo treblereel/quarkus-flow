@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 import jakarta.enterprise.util.Nonbinding;
 import jakarta.interceptor.InterceptorBinding;
 
-import io.quarkiverse.flow.casehub.engine.internal.event.CaseStatus;
+import io.quarkiverse.flow.casehub.engine.internal.event.CaseEventType;
 
 @InterceptorBinding
 @Retention(RetentionPolicy.RUNTIME)
@@ -16,5 +16,5 @@ import io.quarkiverse.flow.casehub.engine.internal.event.CaseStatus;
 public @interface CaseEventTracker {
 
     @Nonbinding
-    CaseStatus status();
+    CaseEventType eventType();
 }

@@ -20,4 +20,9 @@ public class CaseTimedOutEvent extends CaseEvent {
     public Duration getTimeout() {
         return timeout;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.CASE_EXECUTION_TIMED_OUT;
+    }
 }

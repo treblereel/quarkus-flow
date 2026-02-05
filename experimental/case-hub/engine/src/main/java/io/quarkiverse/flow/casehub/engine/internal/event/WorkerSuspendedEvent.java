@@ -19,4 +19,9 @@ public class WorkerSuspendedEvent extends WorkerEvent {
     public String getReason() {
         return reason;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_SUSPENDED;
+    }
 }

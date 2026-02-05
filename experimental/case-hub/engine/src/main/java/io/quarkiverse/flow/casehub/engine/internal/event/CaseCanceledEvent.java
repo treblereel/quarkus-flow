@@ -19,4 +19,9 @@ public class CaseCanceledEvent extends CaseEvent {
     public String getReason() {
         return reason;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.CASE_EXECUTION_CANCELED;
+    }
 }

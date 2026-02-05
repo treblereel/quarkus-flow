@@ -17,6 +17,7 @@ public class CaseDefinition extends PanacheEntity {
     private String name;
     private String version = "1.0";
     private String title = "Untitled Case Definition";
+    private String taskQueue = "default";
 
     @Transient
     private Set<Worker> workers = new HashSet<>();
@@ -67,6 +68,14 @@ public class CaseDefinition extends PanacheEntity {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public String getTaskQueue() {
+        return taskQueue;
+    }
+
+    public void setTaskQueue(String taskQueue) {
+        this.taskQueue = taskQueue;
     }
 
     public void addWorker(Worker worker) {

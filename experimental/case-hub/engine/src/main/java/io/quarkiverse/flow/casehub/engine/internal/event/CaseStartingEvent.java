@@ -18,4 +18,9 @@ public class CaseStartingEvent extends CaseEvent {
     public CaseDefinition getCase() {
         return theCase;
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.CASE_EXECUTION_STARTED;
+    }
 }

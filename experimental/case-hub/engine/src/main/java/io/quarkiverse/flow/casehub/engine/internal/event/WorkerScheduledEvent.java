@@ -7,4 +7,9 @@ public class WorkerScheduledEvent extends WorkerEvent {
     public WorkerScheduledEvent(UUID caseId, String workerName) {
         super(caseId, workerName);
     }
+
+    @Override
+    public CaseEventType getCaseEventType() {
+        return CaseEventType.WORKER_TASK_SCHEDULED;
+    }
 }
